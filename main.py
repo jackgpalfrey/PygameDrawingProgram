@@ -9,7 +9,7 @@ win = pygame.display.set_mode((WIDTH,HEIGHT))
 pygame.display.set_caption("Drawing Program")
 win.fill(Color.WHITE)
 
-
+# Hello
 pygame.init()
 pygame.font.init()
 
