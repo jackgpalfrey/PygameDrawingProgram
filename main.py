@@ -1,12 +1,11 @@
+# Imports
 import pygame
 from Utils.RGBcolors import AllColors as Color
 import random
 
 # Constants:
-
 WIDTH = 800
 HEIGHT = 800
-
 
 # Pygame Initialisations
 pygame.init()
@@ -17,7 +16,7 @@ win = pygame.display.set_mode((WIDTH,HEIGHT))
 pygame.display.set_caption("Drawing Program")
 win.fill(Color.WHITE)
 
-# Class for Drawing Section
+# Class for DrawingSurface
 class DrawSurface():
     def __init__(self,win,surfaceWidth,surfaceHeight,surfaceXOffset,surfaceYOffset,pixelXDensity,pixelYDensity):
         """ Creates Drawing Surface
@@ -131,6 +130,7 @@ class DrawSurface():
             color = self.baseColor
         self.pixelGrid[gridPos[0]][gridPos[1]] = color
 
+
 def drawMenu():
     """ Draws Menu Elements of the Application
     """
@@ -163,7 +163,6 @@ def drawMenu():
     pygame.draw.line(win,Color.BLACK,(475, 675),(475, 775))
 
 
-
 def checkMenuPos(mousePos):
     """ Takes Pixel Position of Mouse and finds what menu item has been clicked on
 
@@ -191,8 +190,6 @@ def checkMenuPos(mousePos):
         paintColor = Color.WHITE
     
     
-
-
 def clickHandler(drawSurface,mousePos,paintColor):
     """ Handles Mouse postion and clicks
 
@@ -208,11 +205,11 @@ def clickHandler(drawSurface,mousePos,paintColor):
     else: # If mousePos is inside pixelGrid runs DrawSurface.changeColor() to change the color of selected DrawSurface pixel to paintColor
         surf.changeColor(gridPos,paintColor)
 
+
 # Creates DrawSurface
 surf = DrawSurface(win,700,600,50,50,70,60)
 surf.draw()
 pygame.display.update()
-
 
 paintColor = Color.BLACK # Sets Default paintColor to black
 
