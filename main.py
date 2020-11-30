@@ -40,7 +40,7 @@ class DrawSurface():
         self.baseColor = Color.LIGHT_GREY # Color all pixels will start as
 
 
-        self.pixelGrid = self.createPixelGrid(self.width,self.height,self.xDensity,self.yDensity)
+        self.createPixelGrid(self.width,self.height,self.xDensity,self.yDensity)
 
     def createPixelGrid(self,surfaceWidth,surfaceHeight,xPixelDensity,yPixelDensity):
         """ Creates the array data structure for the Drawing Surface
@@ -67,6 +67,9 @@ class DrawSurface():
             pixelGrid.append([])
             for pixel in range(yPixelDensity):
                 pixelGrid[row].append(self.baseColor)
+
+
+        self.pixelGrid = pixelGrid
 
         return pixelGrid
 
