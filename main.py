@@ -14,6 +14,8 @@ pygame.font.init()
 # Create Window
 win = pygame.display.set_mode((WIDTH,HEIGHT))
 pygame.display.set_caption("Drawing Program")
+programIcon = pygame.image.load('icon.png')
+pygame.display.set_icon(programIcon)
 win.fill(Color.WHITE)
 
 # Class for DrawingSurface
