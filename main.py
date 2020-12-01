@@ -37,7 +37,8 @@ class DrawSurface():
         self.yOffset = surfaceYOffset
         self.xDensity = pixelXDensity
         self.yDensity = pixelYDensity
-        self.baseColor = Color.LIGHT_GREY # Color all pixels will start as
+        self.defaultBaseColor = Color.LIGHT_GREY
+        self.baseColor = self.defaultBaseColor# Color all pixels will start as
 
 
         self.createPixelGrid(self.width,self.height,self.xDensity,self.yDensity)
@@ -66,12 +67,13 @@ class DrawSurface():
         for row in range(xPixelDensity):
             pixelGrid.append([])
             for pixel in range(yPixelDensity):
-                pixelGrid[row].append(self.baseColor)
+                pixelGrid[row].append(self.defaultBaseColor)
 
 
         self.pixelGrid = pixelGrid
 
         return pixelGrid
+
 
 
     def getPixelGird(self):
@@ -91,10 +93,10 @@ class DrawSurface():
                 color = self.pixelGrid[row][pixel]
                 pygame.draw.rect(self.win, color, (xPos,yPos,self.xPixelSize,self.yPixelSize))
 
-        pygame.draw.line(self.win,Color.GREY,(self.xOffset, self.yOffset),(self.xOffset, self.yOffset + self.height))
-        pygame.draw.line(self.win,Color.GREY,(self.xOffset + self.width ,self.yOffset),(self.xOffset + self.width, self.yOffset + self.height))
-        pygame.draw.line(self.win,Color.GREY,(self.xOffset,self.yOffset + self.height),(self.xOffset + self.width, self.yOffset + self.height))
-        pygame.draw.line(self.win,Color.GREY,(self.xOffset,self.yOffset),(self.xOffset + self.width, self.yOffset))
+        pygame.draw.line(self.win,Color.GREY,(self.xOffset, self.yOffset),(self.xOffset, self.yOffset + self.height)) # Left Border
+        pygame.draw.line(self.win,Color.GREY,(self.xOffset + self.width ,self.yOffset),(self.xOffset + self.width, self.yOffset + self.height)) # Right Border
+        pygame.draw.line(self.win,Color.GREY,(self.xOffset,self.yOffset + self.height),(self.xOffset + self.width, self.yOffset + self.height)) # Bottom Border
+        pygame.draw.line(self.win,Color.GREY,(self.xOffset,self.yOffset),(self.xOffset + self.width, self.yOffset)) # Top Border
 
 
     def getMousedPixel(self,mousePos):
@@ -134,6 +136,15 @@ class DrawSurface():
         self.pixelGrid[gridPos[0]][gridPos[1]] = color
 
 
+    def changeBackground(self,color):
+        previousColor = self.baseColor
+        self.baseColor = color
+
+        for row in range(len(self.pixelGrid)):
+            for pixel in range(len(self.pixelGrid[row])):
+                self.pixelGrid[row][pixel] = color
+
+
 def drawMenu():
     """ Draws Menu Elements of the Application
     """
@@ -160,21 +171,26 @@ def drawMenu():
     pygame.draw.rect(win, Color.WHITE, (425,725,50,50)) # White Color Button
     
     # Draws Border Around Color Selector
-    pygame.draw.line(win,Color.BLACK,(325, 675),(475, 675))
-    pygame.draw.line(win,Color.BLACK,(325, 775),(475, 775))
-    pygame.draw.line(win,Color.BLACK,(325, 675),(325, 775))
-    pygame.draw.line(win,Color.BLACK,(475, 675),(475, 775))
+    pygame.draw.line(win,Color.BLACK,(325, 675),(475, 675)) # Top Border
+    pygame.draw.line(win,Color.BLACK,(325, 725),(475, 725)) # Middle Vetical Divider
+    pygame.draw.line(win,Color.BLACK,(325, 775),(475, 775)) # Bottom Border
+    pygame.draw.line(win,Color.BLACK,(325, 675),(325, 775)) # Left Border
+    pygame.draw.line(win,Color.BLACK,(475, 675),(475, 775)) # Right Border
+    pygame.draw.line(win,Color.BLACK,(375, 675),(375, 775)) # 1st Horizontal Divider
+    pygame.draw.line(win,Color.BLACK,(425, 675),(425, 775)) # 2nd Horizontal Divider
 
 
-def checkMenuPos(mousePos):
+def checkMenuPos(gridObject,mousePos):
     """ Takes Pixel Position of Mouse and finds what menu item has been clicked on
 
     Args:
         pos (tuple): Pixel Position of mouse
     """
     global paintColor
+    global changingBackground
     x,y = mousePos
 
+    previousPaintColor = paintColor
     if x >= 50 and x <= 150 and y >= 675 and y <= 725 : # Clear Button
         surf.createPixelGrid(700,600,70,60)
     elif x >= 650 and x <= 750 and y >= 675 and y <= 725 : # Eraser Button
@@ -191,6 +207,10 @@ def checkMenuPos(mousePos):
         paintColor = Color.BLACK
     elif x >= 425 and x <= 475 and y >= 725 and y <= 775 : # White Button
         paintColor = Color.WHITE
+
+    if changingBackground: 
+        gridObject.changeBackground(paintColor)
+        paintColor = previousPaintColor
     
     
 def clickHandler(drawSurface,mousePos,paintColor):
@@ -204,7 +224,7 @@ def clickHandler(drawSurface,mousePos,paintColor):
     try: # Tries to get the pixelGrid coords of mouse
         gridPos = drawSurface.getMousedPixel(mousePos)
     except Exception: # If coords is outside of pixelGrid runs checkMenuPos() to determine if it clicked a menu item
-        checkMenuPos(mousePos)
+        checkMenuPos(drawSurface,mousePos)
     else: # If mousePos is inside pixelGrid runs DrawSurface.changeColor() to change the color of selected DrawSurface pixel to paintColor
         surf.changeColor(gridPos,paintColor)
 
@@ -215,12 +235,14 @@ surf.draw()
 pygame.display.update()
 
 paintColor = Color.BLACK # Sets Default paintColor to black
+changingBackground = False
 
 # Main Game Loop
 running = True
 while running:
 
     # Draws UI
+    win.fill(Color.WHITE)
     surf.draw()
     drawMenu()
     pygame.display.update()
@@ -249,3 +271,11 @@ while running:
             # Backspace to Select Eraser Handling
             elif event.key == pygame.K_BACKSPACE:
                 paintColor = "ERASER"
+
+            elif event.key == pygame.K_RETURN:
+                changingBackground = True
+
+
+        elif event.type == pygame.KEYUP:
+            if event.key == pygame.K_RETURN:
+                changingBackground = False
