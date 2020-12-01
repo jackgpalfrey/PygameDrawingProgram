@@ -93,6 +93,7 @@ class DrawSurface():
             for pixel in range(len(self.pixelGrid[row])):
                 yPos = self.yOffset + (pixel * self.yPixelSize) 
                 color = self.pixelGrid[row][pixel]
+                if color == "ERASER": color = self.baseColor
                 pygame.draw.rect(self.win, color, (xPos,yPos,self.xPixelSize,self.yPixelSize))
 
         pygame.draw.line(self.win,Color.GREY,(self.xOffset, self.yOffset),(self.xOffset, self.yOffset + self.height)) # Left Border
@@ -144,7 +145,8 @@ class DrawSurface():
 
         for row in range(len(self.pixelGrid)):
             for pixel in range(len(self.pixelGrid[row])):
-                self.pixelGrid[row][pixel] = color
+                if self.pixelGrid[row][pixel] == previousColor:
+                    self.pixelGrid[row][pixel] = color
 
 
 def drawMenu():
@@ -209,6 +211,10 @@ def checkMenuPos(gridObject,mousePos):
         paintColor = Color.BLACK
     elif x >= 425 and x <= 475 and y >= 725 and y <= 775 : # White Button
         paintColor = Color.WHITE
+
+    else:
+        paintColor = previousPaintColor
+        return
 
     if changingBackground: 
         gridObject.changeBackground(paintColor)
